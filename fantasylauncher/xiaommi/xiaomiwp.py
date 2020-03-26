@@ -6,6 +6,7 @@ import zipfile
 import time
 import platform
 import uuid
+from googletrans import Translator
 
 DEBUGMODE = True
 
@@ -14,9 +15,18 @@ quality = "75"
 
 
 def unzip():
+    translator = Translator()  # initalize the Translator object
     for root, dirs, files in os.walk(currentProjectFilePath):
         for name in files:
             if name.endswith(".mtz"):
+                themeName = name[0:name.rindex(".mtz")].decode("gbk").encode("utf-8")
+                if "+" in themeName:
+                    split = themeName.split("+")
+                    themeName = ""
+                    for str in split:
+                        themeName = themeName + str
+                translate_result = translator.translate(themeName, dest='en').text
+                print translate_result
                 command = "7z x -tZip -y %s -o%s" % (
                     os.path.join(root, name), os.path.join(root, uuid.uuid3(uuid.NAMESPACE_DNS, name).__str__()))
                 log(command)
@@ -39,10 +49,11 @@ def extactWallPaper():
                 log(command)
                 os.system(command)
 
+
 def extactWallPaper():
     for root, dirs, files in os.walk(currentProjectFilePath):
         for name in files:
-            if "wallpaper.jpg" in name:
+            if "default_wallpaper.jpg" in name:
                 fullname = os.path.join(root, name);
                 str = fullname[0:fullname[0:fullname.rindex("\\")].rindex("\\")]
                 command = "copy %s %s" % (os.path.join(root, name), currentProjectFilePath + "\\wallPaper\\" + str[
@@ -51,6 +62,7 @@ def extactWallPaper():
                                                                                                                    str)] + "_" + name)
                 log(command)
                 os.system(command)
+
 
 def compress(filePath):
     if os.path.isfile(filePath):
@@ -75,19 +87,30 @@ def compressFolder():
 
 def getJson():
     jsonStr = "{\"data\":["
-    for name in os.listdir(currentProjectFilePath):
-        new_path = os.path.join(currentProjectFilePath, name)
-        if os.path.isfile(new_path):
-            jsonStr = jsonStr \
-                      + ("{\"id\":\"" + name[0:name.rindex(".")] + "\",") \
-                      + ("\"wallPaperId\":\"" + name[0:name.rindex(".")] + "\",") \
-                      + (
-                              "\"previewUrl\":\"https://firebasestorage.googleapis.com/v0/b/fantasylauncher-7dec8.appspot.com/o/wallpaper%2Fpreview%2F" + name + "?alt=media" + "\",") \
-                      + ("\"type\":0,") \
-                      + ("\"tag\":\"\",") \
-                      + ("\"free\":true,") \
-                      + ("\"ver\":0") \
-                      + "},"
+    translator = Translator()  # initalize the Translator object
+    for root, dirs, files in os.walk(currentProjectFilePath):
+        for name in files:
+            if name.endswith(".mtz"):
+                themeName = name[0:name.rindex(".mtz")].decode("gbk").encode("utf-8")
+                if "+" in themeName:
+                    split = themeName.split("+")
+                    themeName = ""
+                    for str in split:
+                        themeName = themeName + str
+                translate_result = translator.translate(themeName, dest='en').text
+                print translate_result
+                wallPaperId = uuid.uuid3(uuid.NAMESPACE_DNS, name).__str__()
+                jsonStr = jsonStr \
+                          + ("{\"id\":\"" + wallPaperId + "\",") \
+                          + ("\"name\":\"" + translate_result + "\",") \
+                          + ("\"wallPaperId\":\"" + wallPaperId + "\",") \
+                          + (
+                                  "\"previewUrl\":\"https://storage.googleapis.com/fantasylauncer/wallpaper/preview/" + wallPaperId + ".webp" + "\",") \
+                          + ("\"type\":0,") \
+                          + ("\"tag\":\"\",") \
+                          + ("\"free\":true,") \
+                          + ("\"ver\":0") \
+                          + "},"
 
     print jsonStr[0:len(jsonStr) - 1] + "]}"
 
@@ -108,7 +131,8 @@ if __name__ == '__main__':
     else:
         currentProjectFilePath = os.getcwd()
 
+    # getJson()
     # unzip()
     # extactWallPaper()
     # compressFolder()
-    # getJson()
+

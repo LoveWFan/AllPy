@@ -98,7 +98,9 @@ def compressFolder():
     for root, dirs, files in os.walk(currentProjectFilePath):
         for name in files:
             if name.endswith(".jpg") or name.endswith(".png"):
-                compress(os.path.join(root, name))
+                fileName = os.path.join(root, name);
+                if "fancy_icons" not in fileName:
+                    compress(os.path.join(root, name))
 
 
 def getJson():
@@ -108,7 +110,7 @@ def getJson():
         rootDir = os.path.join(currentProjectFilePath, name)
         if os.path.isdir(rootDir):
             themeId = uuid.uuid3(uuid.NAMESPACE_DNS, name).__str__()
-            themeName = name[0:name.rindex("-")].decode("gbk").encode("utf-8")
+            themeName = name.decode("gbk").encode("utf-8")
             if "+" in themeName:
                 split = themeName.split("+")
                 themeName = ""
@@ -122,14 +124,14 @@ def getJson():
                       + ("\"name\":\"" + translate_result + "\",") \
                       + ("\"themeId\":\"" + themeId + "\",") \
                       + ("\"previewUrls\":[")
-            previewStr = "\"https://firebasestorage.googleapis.com/v0/b/fantasylauncher-7dec8.appspot.com/o/theme%2Fpreview%2F" + themeId + "_" + "default_lock_wallpaper.webp" + "?alt=media\","
+            previewStr = "\"https://storage.googleapis.com/fantasylauncer/wallpaper/preview/" + themeId + "_" + "default_lock_wallpaper.webp" + "\","
             if os.path.isdir(os.path.join(rootDir, "preview")):
                 for preview in os.listdir(os.path.join(rootDir, "preview")):
-                    previewStr = previewStr + "\"https://firebasestorage.googleapis.com/v0/b/fantasylauncher-7dec8.appspot.com/o/theme%2Fpreview%2F" + themeId + "_" + preview + "?alt=media\","
+                    previewStr = previewStr + "\"https://storage.googleapis.com/fantasylauncer/wallpaper/preview/" + themeId + "_" + preview + "\","
             jsonStr = jsonStr + previewStr[0:len(previewStr) - 1]
             jsonStr = jsonStr + "],"
             jsonStr = jsonStr + (
-                    "\"zipUrl\":\"https://firebasestorage.googleapis.com/v0/b/fantasylauncher-7dec8.appspot.com/o/theme%2Fzip%2F" + themeId + ".zip?alt=media" + "\",") \
+                    "\"zipUrl\":\"https://storage.googleapis.com/fantasylauncer/wallpaper/preview/" + themeId + ".zip" + "\",") \
  \
                       + ("\"themeOS\":1,") \
                       + ("\"type\":0,") \
@@ -146,14 +148,10 @@ def deleteUnUseResource():
         rootDir = os.path.join(currentProjectFilePath, name)
         if os.path.isdir(rootDir):
             for name in os.listdir(rootDir):
-                if os.path.isfile(os.path.join(rootDir, name)):
+                if os.path.isfile(os.path.join(rootDir, name)) and not name.startswith("lockscreen"):
                     command = "del %s" % (os.path.join(rootDir, name))
                     log(command)
                     os.system(command)
-            if os.path.isdir(os.path.join(rootDir, "icon\\fancy_icons")):
-                command = "rmdir /s /q %s" % (os.path.join(rootDir, "icon\\fancy_icons"))
-                log(command)
-                os.system(command)
             if os.path.isdir(os.path.join(rootDir, "preview")):
                 for name in os.listdir(os.path.join(rootDir, "preview")):
                     if name.startswith("preview_launcher") or (
@@ -172,6 +170,7 @@ def zipFile():
         log(command)
         os.system(command)
 
+
 def log(logString):
     if DEBUGMODE:
         print logString
@@ -189,11 +188,10 @@ if __name__ == '__main__':
         currentProjectFilePath = os.getcwd()
 
     # unzipIcons()
-    #
-    # compressFolder()
     # deleteUnUseResource()
+    # compressFolder()
     # getJson()
-    # renameTheme()
-    # extactThemePreview()
-    # generateConfigJson()
-    # zipFile()
+    renameTheme()
+    extactThemePreview()
+    generateConfigJson()
+    zipFile()
