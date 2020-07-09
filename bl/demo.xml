@@ -1,0 +1,6 @@
+<item android:width="344dp" android:height="107dp">
+  <shape android:shape="rectangle">
+    <solid android:color="#ffffffff" />
+    <corners android:topLeftRadius="10dp" android:topRightRadius="10dp"/>
+  </shape>
+</item>
