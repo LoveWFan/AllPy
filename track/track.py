@@ -1,19 +1,10 @@
 #!/usr/bin/python3
 import re
 if __name__ == "__main__":
-    str = '''点击“我的钱包”入口	me_wallet_click
-钻石充值页面展示	me_diamond_recharge_show
-充值档位点击	me_diamond_recharge_click
-点击“确认充值”	me_diamond_recharge_confirm_click
-充值成功	me_diamond_recharge_success
-充值失败	me_diamond_recharge_fail
-金币兑换页面展示	me_coin_exchange_click
-兑换档位点击	me_coin_exchange_click
-点击“确认充值”	me_coin_exchange_confirm_click
-兑换成功	me_coin_exchange_success
-兑换失败	me_coin_exchange_fail
-从钱包页面返回上一级	me_wallet_out
-点击官方QQ群的“复制”按钮	me_qq_copy_click'''
+    str = '''点击游戏战绩入口	me_game_record_click
+最近战绩页面展示	me_recent_record_page_show
+总战绩页面展示	me_total_record_page_show
+最近战绩页面的头像点击	me_recent_record_avatar_click'''
     split = str.split("\n")
     for subStr in split:
 

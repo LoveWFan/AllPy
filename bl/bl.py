@@ -30,6 +30,10 @@ class ShapeHandler(xml.sax.ContentHandler):
         if tag == "solid":
             # bl_solid_color color
             print("app:bl_solid_color=", "\"" + attributes["android:color"] + "\"")
+
+        if tag == "stroke":
+            print("app:bl_stroke_color=", "\"" + attributes["android:color"] + "\"")
+            print("app:bl_stroke_width=", "\"" + attributes["android:width"] + "\"")
         if tag == "corners":
             # bl_corners_radius dimension
             attrilibs = attributes.getNames()
